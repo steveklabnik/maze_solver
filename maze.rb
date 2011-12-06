@@ -5,20 +5,19 @@ require 'nokogiri'
 class Room
   def initialize(uri)
     @uri = uri
-    @uri = extract_href_from_xml('start', current_xml)
+    @uri = extract_href_from_xml('start')
   end
 
   def go(uri)
     @uri = uri
-
   end
 
   def can_go?(direction)
-    extract_href_from_xml(direction, current_xml)
+    extract_href_from_xml(direction)
   end
 
   def finished?
-    xml_has_completed?(current_xml)
+    xml_has_completed?
   end
 
   private
@@ -27,8 +26,8 @@ class Room
     request_xml(@uri)
   end
 
-  def extract_href_from_xml(rel, xml)
-    doc = Nokogiri::XML(xml)
+  def extract_href_from_xml(rel)
+    doc = Nokogiri::XML(current_xml)
 
     node = doc.xpath("//link[@rel=\"#{rel}\"]").first
     return nil unless node
@@ -36,8 +35,8 @@ class Room
   end
 
 
-  def xml_has_completed?(xml)
-    Nokogiri::XML(xml).xpath("//completed").first
+  def xml_has_completed?
+    Nokogiri::XML(current_xml).xpath("//completed").first
   end
 
   def request_xml(url)
