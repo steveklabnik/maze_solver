@@ -2,10 +2,12 @@ class Solver
   extend Forwardable
   def_delegators :@maze, :finished?
 
+  attr_accessor :total_steps
+
   def initialize(uri)
     @visited = {}
     @path = []
-    @steps = 0
+    @total_steps = 0
     @maze = Maze.new(uri)
   end
 
@@ -23,10 +25,6 @@ class Solver
     @path << link
     @maze.visit(link)
 
-    @steps = @steps + 1
-  end
-
-  def total_steps
-    @steps
+    @total_steps += 1
   end
 end
