@@ -1,14 +1,20 @@
-# This code solves one of Mike Amundsen's maze+xml mazes: http://amundsen.com/media-types/maze/
-#
-# The code isn't great. I just wanted to see how easy it'd be. So I built up a little test, extracted
-# some stuff into a method... next thing you know I've got a little procedural application.
-#
-# Backtracking implementation borrowed from https://github.com/caelum/restfulie/blob/master/full-examples/mikemaze/maze_basic.rb because I'm lazy.
-
-
 require 'uri'
 require 'net/http'
 require 'nokogiri'
+
+class Room
+  attr_accessor :current_xml
+
+  def initialize(uri)
+    @uri = extract_href_from_xml('start', request_xml(uri))
+    @current_xml = request_xml(@uri)
+  end
+
+  def go(uri)
+    @uri = uri
+    @current_xml = request_xml(@uri)
+  end
+end
 
 def request_xml(url)
   uri = URI(url)
@@ -32,15 +38,12 @@ def extract_href_from_xml(rel, xml)
 
   node = doc.xpath("//link[@rel=\"#{rel}\"]").first
   return nil unless node
-  node[:href] #uuuuuuuuugh can't use Hash#fetch because it's not a hash.
+  node[:href] #uuuuuuuuugh
 end
 
-def start_uri
-  xml = request_xml('http://amundsen.com/examples/mazes/2d/five-by-five/')
-  extract_href_from_xml('start', xml)
-end
+room = Room.new('http://amundsen.com/examples/mazes/2d/five-by-five/')
 
-xml = request_xml(start_uri)
+xml = room.current_xml
 visited = {}
 path = []
 steps = 0
@@ -58,7 +61,8 @@ until(xml_has_completed?(xml))
 
   visited[link] = true
   path << link
-  xml = request_xml(link)
+  room.go(link)
+  xml = room.current_xml
 
   steps = steps + 1
 end
