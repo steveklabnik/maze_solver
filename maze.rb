@@ -1,8 +1,14 @@
+# This code solves one of Mike Amundsen's maze+xml mazes: http://amundsen.com/media-types/maze/
+#
+# The code isn't great. I just wanted to see how easy it'd be. So I built up a little test, extracted
+# some stuff into a method... next thing you know I've got a little procedural application.
+#
+# Backtracking implementation borrowed from https://github.com/caelum/restfulie/blob/master/full-examples/mikemaze/maze_basic.rb because I'm lazy.
+
+
 require 'uri'
 require 'net/http'
 require 'nokogiri'
-
-url = "http://amundsen.com/examples/mazes/2d/five-by-five/"
 
 def request_xml(url)
   uri = URI(url)
@@ -17,11 +23,8 @@ def request_xml(url)
   res.body
 end
 
-def xml_has_element?(element, xml)
-  doc = Nokogiri::XML(xml)
-
-  node = doc.xpath("//#{element}").first
-  node
+def xml_has_completed?(xml)
+  Nokogiri::XML(xml).xpath("//completed").first
 end
 
 def extract_href_from_xml(rel, xml)
@@ -29,7 +32,7 @@ def extract_href_from_xml(rel, xml)
 
   node = doc.xpath("//link[@rel=\"#{rel}\"]").first
   return nil unless node
-  node[:href] #uuuuuuuuugh
+  node[:href] #uuuuuuuuugh can't use Hash#fetch because it's not a hash.
 end
 
 def start_uri
@@ -37,41 +40,28 @@ def start_uri
   extract_href_from_xml('start', xml)
 end
 
-puts "We're going to play a maze game. Pick which direction you'd like to go. Type 'north,' 'south,' 'east,' or 'west' to go in that direction."
+xml = request_xml(start_uri)
+visited = {}
+path = []
+steps = 0
 
-current_uri = start_uri
+until(xml_has_completed?(xml))
 
-while(true)
-  xml = request_xml(current_uri)
-  break if xml_has_element?("completed", xml)
+  link = ["start", "east", "west", "south", "north", "exit"].collect do |direction|
+    extract_href_from_xml(direction, xml)
+  end.find {|href| href && !visited[href] }
 
-  north = extract_href_from_xml('north', xml)
-  south = extract_href_from_xml('south', xml)
-  east = extract_href_from_xml('east', xml)
-  west = extract_href_from_xml('west', xml)
-  an_exit = extract_href_from_xml('exit', xml)
-
-  puts ""
-  puts "In this room, you can go:"
-  puts "north" if north
-  puts "south" if south
-  puts "east" if east
-  puts "west" if west
-  puts "exit" if an_exit
-
-  puts ""
-  puts "Where do you want to go?"
-  direction = gets.chomp
-
-  #wow, this sucks. We could just use a hash instead...
-  current_uri = case direction.downcase
-    when "north" then north
-    when "south" then south
-    when "east" then east
-    when "west" then west
-    when "exit" then an_exit
+  if !link
+    path.pop
+    link = path.pop
   end
+
+  visited[link] = true
+  path << link
+  xml = request_xml(link)
+
+  steps = steps + 1
 end
 
-puts "You win!"
+puts "you win in #{steps}!"
 
