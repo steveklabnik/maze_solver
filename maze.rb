@@ -4,24 +4,28 @@ require 'nokogiri'
 
 class Room
   def initialize(uri)
-    @uri = extract_href_from_xml('start', request_xml(uri))
-    @current_xml = request_xml(@uri)
+    @uri = uri
+    @uri = extract_href_from_xml('start', current_xml)
   end
 
   def go(uri)
     @uri = uri
-    @current_xml = request_xml(@uri)
+
   end
 
   def can_go?(direction)
-    extract_href_from_xml(direction, @current_xml)
+    extract_href_from_xml(direction, current_xml)
   end
 
   def finished?
-    xml_has_completed?(@current_xml)
+    xml_has_completed?(current_xml)
   end
 
   private
+
+  def current_xml
+    request_xml(@uri)
+  end
 
   def extract_href_from_xml(rel, xml)
     doc = Nokogiri::XML(xml)
