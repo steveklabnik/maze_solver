@@ -23,7 +23,7 @@ class Room
   private
 
   def current_xml
-    request_xml(@uri)
+    Request.new(@uri).get
   end
 
   def extract_href_from_xml(rel)
@@ -39,19 +39,23 @@ class Room
     Nokogiri::XML(current_xml).xpath("//completed").first
   end
 
-  def request_xml(url)
-    uri = URI(url)
+end
 
-    req = Net::HTTP::Get.new(uri.request_uri)
+class Request
+  def initialize(url)
+    @uri = URI(url)
+  end
+
+  def get
+    req = Net::HTTP::Get.new(@uri.request_uri)
     req['Accept'] = "application/xml"
 
-    res = Net::HTTP.start(uri.hostname, uri.port) {|http|
+    res = Net::HTTP.start(@uri.hostname, @uri.port) {|http|
       http.request(req)
     }
 
     res.body
   end
-
 end
 
 
