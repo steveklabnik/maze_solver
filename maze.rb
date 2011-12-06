@@ -4,6 +4,7 @@ require 'nokogiri'
 
 class Room
   def initialize(uri)
+    @xml ||= {}
     @uri = uri
     @uri = xml.extract_href('start')
   end
@@ -23,7 +24,7 @@ class Room
   private
 
   def xml
-    XML.new(@uri)
+    @xml[@uri] ||= XML.new(@uri)
   end
 end
 
@@ -33,7 +34,7 @@ class XML
   end
 
   def current
-    Request.new(@uri).get
+    @request ||= Request.new(@uri).get
   end
 
   def extract_href(rel)
