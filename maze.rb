@@ -3,8 +3,6 @@ require 'net/http'
 require 'nokogiri'
 
 class Room
-  attr_accessor :current_xml
-
   def initialize(uri)
     @uri = extract_href_from_xml('start', request_xml(uri))
     @current_xml = request_xml(@uri)
@@ -56,7 +54,6 @@ end
 
 room = Room.new('http://amundsen.com/examples/mazes/2d/five-by-five/')
 
-xml = room.current_xml
 visited = {}
 path = []
 steps = 0
@@ -75,7 +72,6 @@ until(room.finished?)
   visited[link] = true
   path << link
   room.go(link)
-  xml = room.current_xml
 
   steps = steps + 1
 end
