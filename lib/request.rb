@@ -12,12 +12,8 @@ class Request
 
   def get
     req = Net::HTTP::Get.new(request_uri)
-    req['Accept'] = "application/xml"
+    req['Accept'] = 'application/xml'
 
-    res = Net::HTTP.start(hostname, port) {|http|
-      http.request(req)
-    }
-
-    res.body
+    Net::HTTP.start(hostname, port) {|http| http.request(req) }.body
   end
 end

@@ -2,7 +2,7 @@ require 'maze'
 require 'forwardable'
 
 class Solver
-  DIRECTIONS = ["start", "east", "west", "south", "north", "exit"]
+  DIRECTIONS = ['start', 'east', 'west', 'south', 'north', 'exit']
 
   extend Forwardable
   def_delegators :@maze, :finished?
