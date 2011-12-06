@@ -1,3 +1,5 @@
+require 'xml'
+
 class Maze
   def initialize(uri)
     @xml_cache = {}

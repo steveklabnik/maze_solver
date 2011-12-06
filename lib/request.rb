@@ -1,3 +1,7 @@
+require 'net/http'
+require 'uri'
+require 'forwardable'
+
 class Request
   extend Forwardable
   def_delegators :@uri, :request_uri, :hostname, :port

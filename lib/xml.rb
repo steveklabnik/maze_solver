@@ -1,3 +1,6 @@
+require 'nokogiri'
+require 'request'
+
 class XML
   def initialize(uri)
     @uri = uri
