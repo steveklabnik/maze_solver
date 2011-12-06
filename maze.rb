@@ -5,7 +5,7 @@ require 'nokogiri'
 class Room
   def initialize(uri)
     @uri = uri
-    @uri = extract_href_from_xml('start')
+    @uri = xml_extract_href('start')
   end
 
   def go(uri)
@@ -13,7 +13,7 @@ class Room
   end
 
   def can_go?(direction)
-    extract_href_from_xml(direction)
+    xml_extract_href(direction)
   end
 
   def finished?
@@ -22,23 +22,21 @@ class Room
 
   private
 
-  def current_xml
+  def xml_current
     Request.new(@uri).get
   end
 
-  def extract_href_from_xml(rel)
-    doc = Nokogiri::XML(current_xml)
+  def xml_extract_href(rel)
+    doc = Nokogiri::XML(xml_current)
 
     node = doc.xpath("//link[@rel=\"#{rel}\"]").first
     return nil unless node
     node[:href] #uuuuuuuuugh
   end
 
-
   def xml_has_completed?
-    Nokogiri::XML(current_xml).xpath("//completed").first
+    Nokogiri::XML(xml_current).xpath("//completed").first
   end
-
 end
 
 class Request
