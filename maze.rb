@@ -73,3 +73,5 @@ while(true)
   end
 end
 
+puts "You win!"
+
