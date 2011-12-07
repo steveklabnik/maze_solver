@@ -17,10 +17,18 @@ def request_xml(url)
   res.body
 end
 
-xml = request_xml('http://amundsen.com/examples/mazes/2d/five-by-five/')
-doc = Nokogiri::XML(xml)
+def extract_href_from_xml(rel, xml)
+  doc = Nokogiri::XML(xml)
 
-href = doc.xpath('//link[@rel="start"]').first[:href]
+  node = doc.xpath("//link[@rel=\"#{rel}\"]").first
+  return nil unless node
+  node[:href] #uuuuuuuuugh
+end
 
-puts href
+def start_uri
+  xml = request_xml('http://amundsen.com/examples/mazes/2d/five-by-five/')
+  extract_href_from_xml('start', xml)
+end
+
+puts start_uri
 
