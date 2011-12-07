@@ -1,5 +1,6 @@
 require 'uri'
 require 'net/http'
+require 'nokogiri'
 
 url = "http://amundsen.com/examples/mazes/2d/five-by-five/"
 
@@ -16,5 +17,10 @@ def request_xml(url)
   res.body
 end
 
-puts request_xml(url)
+xml = request_xml('http://amundsen.com/examples/mazes/2d/five-by-five/')
+doc = Nokogiri::XML(xml)
+
+href = doc.xpath('//link[@rel="start"]').first[:href]
+
+puts href
 
