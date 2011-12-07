@@ -53,5 +53,14 @@ while(true)
   puts ""
   puts "Where do you want to go?"
   direction = gets.chomp
+
+  #wow, this sucks. We could just use a hash instead...
+  current_uri = case direction.downcase
+    when "north" then north
+    when "south" then south
+    when "east" then east
+    when "west" then west
+    when "exit" then an_exit
+  end
 end
 
