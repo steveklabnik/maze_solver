@@ -30,5 +30,28 @@ def start_uri
   extract_href_from_xml('start', xml)
 end
 
-puts start_uri
+puts "We're going to play a maze game. Pick which direction you'd like to go. Type 'north,' 'south,' 'east,' or 'west' to go in that direction."
+
+current_uri = start_uri
+
+while(true)
+  xml = request_xml(current_uri)
+  north = extract_href_from_xml('north', xml)
+  south = extract_href_from_xml('south', xml)
+  east = extract_href_from_xml('east', xml)
+  west = extract_href_from_xml('west', xml)
+  an_exit = extract_href_from_xml('exit', xml)
+
+  puts ""
+  puts "In this room, you can go:"
+  puts "north" if north
+  puts "south" if south
+  puts "east" if east
+  puts "west" if west
+  puts "exit" if an_exit
+
+  puts ""
+  puts "Where do you want to go?"
+  direction = gets.chomp
+end
 
