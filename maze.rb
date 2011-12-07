@@ -17,6 +17,13 @@ def request_xml(url)
   res.body
 end
 
+def xml_has_element?(element, xml)
+  doc = Nokogiri::XML(xml)
+
+  node = doc.xpath("//#{element}").first
+  node
+end
+
 def extract_href_from_xml(rel, xml)
   doc = Nokogiri::XML(xml)
 
@@ -36,6 +43,8 @@ current_uri = start_uri
 
 while(true)
   xml = request_xml(current_uri)
+  break if xml_has_element?("completed", xml)
+
   north = extract_href_from_xml('north', xml)
   south = extract_href_from_xml('south', xml)
   east = extract_href_from_xml('east', xml)
